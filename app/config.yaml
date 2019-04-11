@@ -1,2 +1,3 @@
 CACHE_TYPE: simple
 AUTH_SALT: abcde
+TIME_ZONE: 8

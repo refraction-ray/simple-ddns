@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, current_app, request
 from datetime import datetime as dt
+import datetime
 from hashlib import sha1
 
 from .cache import cache
@@ -12,7 +13,9 @@ api = Blueprint("api", __name__)
 def api_query(host):
     if cache.get(host):
         r = cache.get(host)
-        r["time_readable"] = dt.fromtimestamp(r["time"]).strftime("%Y-%m-%d %H:%M:%S")
+        tz_local = datetime.timezone(datetime.timedelta(hours=current_app.config['TIME_ZONE']))
+        times = dt.fromtimestamp(r["time"], tz = tz_local)
+        r["time_readable"] = times.strftime("%Y-%m-%d %H:%M:%S")
         r["host"] = host
         return jsonify(r)
     else:
@@ -52,7 +55,7 @@ def api_apply(host):
     old = cache.get(host)
     if not old:
         current_app.logger.info("ip has been created for %s" % host)
-    if old["ip"] != ip:
+    elif old["ip"] != ip:
         current_app.logger.info("ip has been changed for %s" % host)
     cache.set(host, info)
     hosts = cache.get("all")
