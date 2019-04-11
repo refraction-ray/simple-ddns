@@ -1,3 +1,5 @@
 CACHE_TYPE: simple
 AUTH_SALT: abcde
 TIME_ZONE: 8
+PROXY_SETTING: 0
+CACHE_KEY: host

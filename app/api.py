@@ -4,17 +4,17 @@ import datetime
 from hashlib import sha1
 
 from .cache import cache
-from .conf import blacklist
 
 api = Blueprint("api", __name__)
 
 
 @api.route("/api/query/<host>")
 def api_query(host):
-    if cache.get(host):
-        r = cache.get(host)
+    hostkey = current_app.config["CACHE_KEY"] + host
+    r = cache.get(hostkey)
+    if r:
         tz_local = datetime.timezone(datetime.timedelta(hours=current_app.config['TIME_ZONE']))
-        times = dt.fromtimestamp(r["time"], tz = tz_local)
+        times = dt.fromtimestamp(r["time"], tz=tz_local)
         r["time_readable"] = times.strftime("%Y-%m-%d %H:%M:%S")
         r["host"] = host
         return jsonify(r)
@@ -27,15 +27,13 @@ def api_hosts():
     hosts = cache.get("all")
     corre = {}
     for h in hosts:
-        corre[h] = cache.get(h)["ip"]
+        hkey = current_app.config["CACHE_KEY"]+h
+        corre[h] = cache.get(hkey)["ip"]
     return jsonify(corre)
 
 
 @api.route("/api/apply/<host>", methods=["POST"])
 def api_apply(host):
-    if host in blacklist:
-        return jsonify({"error": "your host name is not supported"})
-
     if not request.json:
         return jsonify({"error": "fail to autheticate the ip record"})
 
@@ -49,7 +47,10 @@ def api_apply(host):
 
     ip = request.json.get("ip")
     if not ip:
-        ip = request.remote_addr
+        if current_app.config["PROXY_SETTING"] == 0:
+            ip = request.remote_addr
+        elif current_app.config["PROXY_SETTING"] == 1 or current_app.config["PROXY_SETTING"] == "nginx":
+            ip = request.headers.get("X-Real-IP")
         current_app.logger.info("use default ip of the sender")
     info["ip"] = ip
     old = cache.get(host)
@@ -57,7 +58,8 @@ def api_apply(host):
         current_app.logger.info("ip has been created for %s" % host)
     elif old["ip"] != ip:
         current_app.logger.info("ip has been changed for %s" % host)
-    cache.set(host, info)
+    hostkey = current_app.config["CACHE_KEY"]+host
+    cache.set(hostkey, info)
     hosts = cache.get("all")
     if not hosts:
         hosts = [host]

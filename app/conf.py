@@ -29,5 +29,3 @@ def get_config(name=None, override=None, path=None):
 confpath = os.environ.get("OVERRIDE_CONF", None) or "config_override.yaml"
 
 conf = get_config(override=confpath)
-
-blacklist = ["all"]

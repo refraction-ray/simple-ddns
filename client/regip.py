@@ -24,7 +24,10 @@ def main(server, hostname, password):
     r = requests.post(server + "/api/apply/" + hostname,
                       json={"auth": passwd(hostname, password)})
 
-    click.echo(r.json())
+    try:
+        click.echo(r.json())
+    except Exception:
+        click.echo("something must go wrong")
 
 
 if __name__ == "__main__":
