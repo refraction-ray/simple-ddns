@@ -9,10 +9,12 @@ Just `./run.sh` or use gunicorn to run the flask app if you like.
 One can change the default configuration in `config.yaml` or write in `config_override.yaml` to overwrite the corresponding default options.
 
 * CACHE_TYPE: `simple`, `fs` and `redis` are supported, which utilize memory, file and redis db as cache backend respectively. If fs or redis cache is configured, further cache related options should be set, see `app/cache.py` for details.
+* CACHE_TIMEOUT: the storage time of ip address, 0 for no time out
 * AUTH_SALT: the password for ip registration.
 * TIME_ZONE: keep the server and client sync when talking about time, eg. 8 for Asia/Beijing
 * PROXY_SETTING: 0 for no proxy, 1 for nginx as the reverse proxy of the app, remember editing the config of nginx to add the line `proxy_set_header X-Real-IP $remote_addr;` in the corresponding server part.
 * CACHE_KEY: no real meaning, any string to avoid key collsion for general usage
+* LOG_ITEMS: determine how many items are recorded as history change
 
 ## Client side
 
