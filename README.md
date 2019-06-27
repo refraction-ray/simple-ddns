@@ -28,6 +28,6 @@ Getting the ip of given host is as simple as `curl -s serverip/api/query/hostnam
 
 If you want to update your hosts according to the server records, try `sudo python3 client/updatehosts.py -s serverip`. And if you make both tasks - push ip to the server (regip.py) and pull ip from the server (updatehosts.py) both as crontab tasks, then you can always use hostname to achieve network relevant tasks just as ddns without worrying ip changing. 
 
-One the other hand, you can also add `serverip/api/source` as a cloud hosts to softwares supporting this feature, eg. SwitchHosts.
+On the other hand, you can also add `serverip/api/source` as a cloud hosts to softwares supporting this feature, eg. SwitchHosts.
 
 *Note: serverip should include the protocol head, i.e `http://` or `https://`. For example, serverip can be in the form https://example.com or http://8.8.8.8*.
